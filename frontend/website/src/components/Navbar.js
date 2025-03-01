@@ -43,6 +43,7 @@ const Navbar = () => {
     return (
         <nav className="navbar">
             <div className="navbar-brand">
+            {error && <p className="error-message">Error: {error}</p>}
                 <img src={logo} alt="Logo" />
                 <p className="navbar-title">SRI GANESH AGENCIES</p>
             </div>
