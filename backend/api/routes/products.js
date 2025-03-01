@@ -12,6 +12,7 @@ const multer = require('multer');
 const path = require('path');
 const Product = require('../models/product');
 const upload = require('../multerConfig');
+const cloudinary = require('../cloudinaryConfig');
 //or import {Product} from '../models/product';
 
 //multer
@@ -47,27 +48,48 @@ router.get('/', async(req, res) => {
 
 router.post('/', checkAdmin, upload.single('productImage'), async (req, res) => {
     try {
+        console.log("🔹 Incoming POST request to add a product");
+        console.log("🔹 Request Body:", req.body);
+        console.log("🔹 Uploaded File:", req.file);
+
         const { name, price } = req.body;
 
-        if (!req.body.name || !req.body.price) {
+        if (!name || !price) {
+            console.log("⚠️ Missing required fields:", { name, price });
             return res.status(400).json({
                 message: "Please provide both name and price",
                 providedFields: Object.keys(req.body)
             });
         }
 
+        let productImage = undefined;
+        if (req.file) {
+            console.log("🔹 Uploading image to Cloudinary...");
+            const result = await cloudinary.uploader.upload(req.file.path).catch(err => {
+                console.error('❌ Cloudinary Upload Error:', err);
+                throw new Error('Failed to upload to Cloudinary');
+            });
+            productImage = result.secure_url;
+            console.log("✅ Image uploaded successfully:", productImage);
+        }
+
+        console.log("🔹 Creating new product document...");
         const newProduct = new Product({
             name,
             price: Number(price), // Ensure price is a number
-            productImage: req.file ? req.file.path.replace(/\\/g, '/').split('api/')[1] : undefined,
+            productImage,
             category: req.body.category || undefined,
-            quantity: req.body.quantity || undefined
+            quantity: Number(req.body.quantity) || undefined,
+            description: req.body.description || undefined
         });
 
+        console.log("🔹 Saving product to database...");
         const product = await newProduct.save();
+        console.log("✅ Product saved successfully:", product);
+
         return res.status(201).json({ product, message: "Created successfully" });
     } catch (error) {
-        console.error('Error:', error);
+        console.error('❌ Error:', error);
         res.status(500).json({ message: error.message });
     }
 });
@@ -130,7 +152,7 @@ router.get('/name/:productName', async (req, res) => {
 
 
 
-router.patch('/:productId', checkAdmin, async (req, res) => {
+router.patch('/:productId', checkAdmin, upload.single('productImage'), async (req, res) => {
     try {
         const { productId } = req.params;
 
@@ -141,11 +163,18 @@ router.patch('/:productId', checkAdmin, async (req, res) => {
             return res.status(400).send({ message: 'Invalid productId format' });
         }
 
+        let updateData = { ...req.body };
+        
+        if (req.file) {
+            const result = await cloudinary.uploader.upload(req.file.path);
+            updateData.productImage = result.secure_url;
+        }
+
 
         // Update the product using findOneAndUpdate
         const updatedProduct = await Product.findOneAndUpdate(
             { productId: numericProductId }, // Find by productId
-            req.body, // Update with provided data
+            updateData,// Update with provided data
             { new: true } // Return the updated document
         );
 
@@ -163,13 +192,19 @@ router.patch('/:productId', checkAdmin, async (req, res) => {
 
 
 
-router.delete('/:productId',checkAdmin,async(req,res)=>{
+router.delete('/:productId', checkAdmin, async (req, res) => {
     try {
         const { productId } = req.params;
-        const deletedProduct = await Product.findOneAndDelete({productId:productId});
+        const deletedProduct = await Product.findOneAndDelete({ productId });
 
         if (!deletedProduct) {
             return res.status(404).send({ message: 'Product not found' });
+        }
+
+        // Delete image from Cloudinary
+        if (deletedProduct.productImage) {
+            const imagePublicId = deletedProduct.productImage.split('/').pop().split('.')[0]; // Extract public ID
+            await cloudinary.uploader.destroy(imagePublicId);
         }
 
         res.status(200).send({ message: 'Product deleted successfully' });
@@ -177,6 +212,7 @@ router.delete('/:productId',checkAdmin,async(req,res)=>{
         res.status(500).send({ message: error.message });
     }
 });
+
 
 
 module.exports = router; // Ensure this line is present

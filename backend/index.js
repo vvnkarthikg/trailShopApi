@@ -17,7 +17,6 @@ const home = require('./api/routes/home');
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
-app.use('/Images', express.static(path.join(__dirname, 'api/Images')));
 
 // Mount the routers
 app.use('/products', productRoutes); 

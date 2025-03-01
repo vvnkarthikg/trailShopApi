@@ -2,54 +2,49 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
-import QuantityModal from './QuantityModal';
+import { FaEdit } from 'react-icons/fa';
 import './ProductDetails.css';
 import no from '../images/no.jpg';
 
 const ProductDetails = () => {
     const { productId } = useParams();
     const navigate = useNavigate();
-    const { products, error } = useSelector(state => state.products); // Get products from Redux 
-    console.log(products);  
-    const product = products?.find(p => productId === productId);
+    const { products } = useSelector(state => state.products);
+    const product = products?.find(p => p.productId === Number(productId));
     
-    const [showModal, setShowModal] = useState(false);
-    const [quantityInputValue, setQuantityInputValue] = useState(1);
+    const [quantity, setQuantity] = useState(1);
     const [isEditing, setIsEditing] = useState(false);
+    const [isEditingQuantity, setIsEditingQuantity] = useState(false);
     const [editedProduct, setEditedProduct] = useState({ ...product });
+    const [editedQuantity, setEditedQuantity] = useState(product?.quantity || 0);
 
     useEffect(() => {
         if (product) {
             setEditedProduct({ ...product });
+            setEditedQuantity(product.quantity);
         }
     }, [product]);
 
-    const handleOrderNow = () => {
+    const handleOrderNow = async () => {
         const token = localStorage.getItem('token');
         if (!token) {
             alert('Please log in to place an order.');
             navigate('/auth');
         } else {
-            setShowModal(true);
+            try {
+                await axios.post(`${process.env.REACT_APP_API_URL}/orders/`, { quantity, id: product._id }, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                alert('Order placed successfully!');
+                navigate('/orders');
+            } catch (err) {
+                alert('Failed to place order. Please try again.');
+            }
         }
     };
 
-    const handleQuantityConfirm = async (quantity) => {
-        try {
-            const token = localStorage.getItem('token');
-            await axios.post(`${process.env.REACT_APP_API_URL}/orders/`, { quantity, id: product._id }, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-            alert('Order placed successfully!');
-            navigate('/orders');
-        } catch (err) {
-            alert('Failed to place order. Please try again.');
-        }
-    };
-
-    const handleEditToggle = () => {
-        setIsEditing(!isEditing);
-    };
+    const handleEditToggle = () => setIsEditing(!isEditing);
+    const handleQuantityEditToggle = () => setIsEditingQuantity(!isEditingQuantity);
 
     const handleSaveChanges = async () => {
         try {
@@ -61,6 +56,19 @@ const ProductDetails = () => {
             setIsEditing(false);
         } catch (err) {
             alert('Failed to update product. Please try again.');
+        }
+    };
+
+    const handleSaveQuantity = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            await axios.patch(`${process.env.REACT_APP_API_URL}/products/${productId}`, { quantity: editedQuantity }, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            alert('Quantity updated successfully!');
+            setIsEditingQuantity(false);
+        } catch (err) {
+            alert('Failed to update quantity. Please try again.');
         }
     };
 
@@ -93,66 +101,46 @@ const ProductDetails = () => {
                     className="product-image"
                 />
                 <div className="product-info">
-                    {isEditing ? (
-                        <input
-                            type="text"
-                            value={editedProduct.category}
-                            onChange={(e) => setEditedProduct({ ...editedProduct, category: e.target.value })}
-                        />
-                    ) : (
-                        <p className="product-category">{product.category}</p>
-                    )}
-                    <h3 className="product-name">
-                        {isEditing ? (
-                            <input
-                                type="text"
-                                value={editedProduct.name}
-                                onChange={(e) => setEditedProduct({ ...editedProduct, name: e.target.value })}
-                            />
-                        ) : (
-                            product.name
-                        )}
-                    </h3>
+                    <h3 className="product-name">{product.name}</h3>
                     <div className="price-container">
-                        {isEditing ? (
-                            <input
-                                type="number"
-                                value={editedProduct.price}
-                                onChange={(e) => setEditedProduct({ ...editedProduct, price: e.target.value })}
-                                min="0"
-                            />
-                        ) : (
-                            <div className="product-prices">
-                                <span className="product-original-price">₹{product.price}</span>
-                                <span className="product-discounted-price">₹{discountedPrice}</span>
-                            </div>
-                        )}
+                        <div className="product-prices">
+                            <span className="product-original-price">₹{product.price}</span>
+                            <span className="product-discounted-price">₹{discountedPrice}</span>
+                        </div>
                     </div>
                     <p className="product-quantity">
-                        {isEditing ? (
-                            <input
-                                type="number"
-                                value={editedProduct.quantity}
-                                onChange={(e) => setEditedProduct({ ...editedProduct, quantity: e.target.value })}
-                                min="0"
-                            />
+                        {isEditingQuantity ? (
+                            <>
+                                <div className="stepper">
+                                    <button onClick={() => setEditedQuantity(prev => Math.max(0, prev - 1))} className = "save-quantity">−</button>
+                                    <span>{editedQuantity}</span>
+                                    <button onClick={() => setEditedQuantity(prev => prev + 1)} className='cancel-edit'>+</button>
+                                </div>
+                                <button onClick={handleSaveQuantity} className="save-changes">Save</button>
+                                <button onClick={handleQuantityEditToggle} className="cancel-edit">Cancel</button>
+                            </>
                         ) : (
                             `${product.quantity} left`
+                        )}
+                        {isAdmin && !isEditingQuantity && (
+                            <FaEdit onClick={handleQuantityEditToggle} className="edit-quantity-icon" />
                         )}
                     </p>
                     <div className="product-description">
                         <h4>About this item</h4>
-                        {isEditing ? (
-                            <textarea
-                                value={editedProduct.description}
-                                onChange={(e) => setEditedProduct({ ...editedProduct, description: e.target.value })}
-                            />
-                        ) : (
-                            <p>{product.description}</p>
-                        )}
+                        <p>{product.description}</p>
                     </div>
                     {!isAdmin && (
-                        <button className="buy-now" onClick={handleOrderNow}>Order Now</button>
+                        <div className="order-section">
+                            <input
+                                type="number"
+                                value={quantity}
+                                min="1"
+                                max={product.quantity}
+                                onChange={(e) => setQuantity(e.target.value)}
+                            />
+                            <button className="buy-now" onClick={handleOrderNow}>Order Now</button>
+                        </div>
                     )}
                     {isAdmin && (
                         isEditing ? (
@@ -169,13 +157,6 @@ const ProductDetails = () => {
                     )}
                 </div>
             </div>
-            <QuantityModal
-                isOpen={showModal}
-                onClose={() => setShowModal(false)}
-                onConfirm={handleQuantityConfirm}
-                quantityInputValue={quantityInputValue}
-                setQuantityInputValue={setQuantityInputValue}
-            />
         </div>
     );
 };

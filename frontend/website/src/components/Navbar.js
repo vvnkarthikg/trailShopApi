@@ -48,14 +48,14 @@ const Navbar = () => {
             </div>
             <SearchBar products={products} onProductSelect={handleProductSelect} />
             <ul className="navbar-links">
-                <li><Link to="/"><FaHome /> Home</Link></li>
-                <li><Link to="/orders"><FaShoppingCart /> Orders</Link></li>
+                <li><Link to="/"><FaHome style={{transform : 'translateY(2px)',}}/> Home</Link></li>
+                <li><Link to="/orders"><FaShoppingCart style={{transform : 'translateY(2px)',}}/> Orders</Link></li>
                 {isAdmin && (
-                    <li><Link to="/add-product"><FaPlusCircle /> Add Product</Link></li>
+                    <li><Link to="/add-product"><FaPlusCircle style={{transform : 'translateY(2px)',}} /> Add Product</Link></li>
                 )}
                 {token ? (
                     <li>
-                        <FaUserCircle onClick={() => setOverlayVisible(!isOverlayVisible)} style={{ cursor: 'pointer' }} />
+                        <FaUserCircle onClick={() => setOverlayVisible(!isOverlayVisible)} style={{ cursor: 'pointer',transform : 'translateY(2px)', }} />
                         {isOverlayVisible && (
                             <div className="overlay" ref={overlayRef}>
                                 <ul>

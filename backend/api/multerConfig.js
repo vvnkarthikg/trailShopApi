@@ -19,36 +19,53 @@
  */
 
 
+require('dotenv').config();
 const multer = require('multer');
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const cloudinary = require('./cloudinaryConfig');
 const path = require('path');
 
-// Configure storage settings
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, 'api/Images'); // Define your destination path here
-    },
-    filename: function (req, file, cb) {
-        cb(null, new Date().toISOString().replace(/:/g, '-') + file.originalname);
-    }
-});
+// Function to generate timestamped filenames
+const generateFileName = (originalName) => {
+  const timestamp = new Date().toISOString()
+    .replace(/:/g, '-')   // Replace colons with dashes
+    .replace(/\..+/, ''); // Remove milliseconds and 'Z'
+  
+  const fileExtension = path.extname(originalName); // Extract file extension
+  const baseName = path.basename(originalName, fileExtension); // Extract name without extension
 
-// Configure file filter
-const fileFilter = (req, file, cb) => {
-    // Allow only specific file types
-    if (file.mimetype === 'image/jpg' || file.mimetype === 'image/png' || file.mimetype === 'image/jpeg') {
-        cb(null, true);
-    } else {
-        cb(null, false);
-    }
+  return `${timestamp}_${baseName}${fileExtension}`;
 };
 
-// Export the multer instance with storage and filter settings
-const upload = multer({
-    storage: storage,
-    limits: {
-        fileSize: 1024 * 1024 * 5 // Limit file size to 5MB
-    },
-    fileFilter: fileFilter
+// Configure Cloudinary Storage
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: async (req, file) => ({
+    folder: 'mern-products', // Ensure all images are saved inside this folder
+    public_id: generateFileName(file.originalname), // Apply timestamp format
+    transformation: [{ width: 500, height: 500, crop: 'limit' }],
+  }),
 });
+
+// Multer Middleware
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 1024 * 1024 * 5 }, // 5MB limit
+  fileFilter: (req, file, cb) => {
+    const allowedMimeTypes = [
+      'image/jpg', 'image/jpeg', 'image/png', 
+      'image/gif', 'image/bmp', 'image/webp'
+    ]; // Allow various image types
+    
+    if (allowedMimeTypes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      req.fileValidationError = 'Invalid file type. Only images are allowed.';
+      cb(null, false);
+    }
+  },
+});
+
+console.log('multerConfig.js: Multer configuration successful');
 
 module.exports = upload;
