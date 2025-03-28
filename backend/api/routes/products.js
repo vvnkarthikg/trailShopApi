@@ -6,7 +6,6 @@
 
 const express = require('express');
 const router = express.Router();
-const mongoose = require('mongoose');
 const checkAdmin = require('../middlewares/check-admin');
 const multer = require('multer');
 const path = require('path');
@@ -80,7 +79,8 @@ router.post('/', checkAdmin, upload.single('productImage'), async (req, res) => 
             productImage,
             category: req.body.category || undefined,
             quantity: Number(req.body.quantity) || undefined,
-            description: req.body.description || undefined
+            description: req.body.description || undefined,
+            brand: req.body.brand || undefined
         });
 
         console.log("🔹 Saving product to database...");
@@ -95,18 +95,17 @@ router.post('/', checkAdmin, upload.single('productImage'), async (req, res) => 
 });
 
 
-router.get('/:productId',async(req,res)=>{
+router.get('/:id', async (req, res) => {
     try {
-        const { productId } = req.params;
-        const numericProductId = Number(productId);
-        if (isNaN(numericProductId)) {
-            return res.status(400).send({ message: 'Invalid productId format' });
+        const { id } = req.params;
+
+        // Validate if the ID is a valid MongoDB ObjectId
+        if (!id.match(/^[0-9a-fA-F]{24}$/)) {
+            return res.status(400).send({ message: 'Invalid ID format' });
         }
 
-        // Find the product by its productId field
-        const product = await Product.findOne({ productId: numericProductId });
-
-
+        // Find the product by _id
+        const product = await Product.findById(id);
 
         if (!product) {
             return res.status(404).send({ message: 'Product not found' });
@@ -116,7 +115,6 @@ router.get('/:productId',async(req,res)=>{
     } catch (error) {
         res.status(500).send({ message: error.message });
     }
-
 });
 
 router.get('/name/:productName', async (req, res) => {
@@ -152,29 +150,26 @@ router.get('/name/:productName', async (req, res) => {
 
 
 
-router.patch('/:productId', checkAdmin, upload.single('productImage'), async (req, res) => {
+router.patch('/:id', checkAdmin, upload.single('productImage'), async (req, res) => {
     try {
-        const { productId } = req.params;
+        const { id } = req.params;
 
-        const numericProductId = Number(productId);
-
-        // Ensure productId is a number
-        if (isNaN(numericProductId)) {
-            return res.status(400).send({ message: 'Invalid productId format' });
+        // Validate if the ID is a valid MongoDB ObjectId
+        if (!id.match(/^[0-9a-fA-F]{24}$/)) {
+            return res.status(400).send({ message: 'Invalid ID format' });
         }
 
         let updateData = { ...req.body };
-        
+
         if (req.file) {
             const result = await cloudinary.uploader.upload(req.file.path);
             updateData.productImage = result.secure_url;
         }
 
-
-        // Update the product using findOneAndUpdate
-        const updatedProduct = await Product.findOneAndUpdate(
-            { productId: numericProductId }, // Find by productId
-            updateData,// Update with provided data
+        // Update the product using findByIdAndUpdate
+        const updatedProduct = await Product.findByIdAndUpdate(
+            id, // Find by _id
+            updateData, // Update with provided data
             { new: true } // Return the updated document
         );
 
@@ -192,16 +187,23 @@ router.patch('/:productId', checkAdmin, upload.single('productImage'), async (re
 
 
 
-router.delete('/:productId', checkAdmin, async (req, res) => {
+
+router.delete('/:id', checkAdmin, async (req, res) => {
     try {
-        const { productId } = req.params;
-        const deletedProduct = await Product.findOneAndDelete({ productId });
+        const { id } = req.params;
+
+        // Validate if the ID is a valid MongoDB ObjectId
+        if (!id.match(/^[0-9a-fA-F]{24}$/)) {
+            return res.status(400).send({ message: 'Invalid ID format' });
+        }
+
+        const deletedProduct = await Product.findByIdAndDelete(id);
 
         if (!deletedProduct) {
             return res.status(404).send({ message: 'Product not found' });
         }
 
-        // Delete image from Cloudinary
+        // Delete image from Cloudinary if it exists
         if (deletedProduct.productImage) {
             const imagePublicId = deletedProduct.productImage.split('/').pop().split('.')[0]; // Extract public ID
             await cloudinary.uploader.destroy(imagePublicId);
@@ -212,7 +214,6 @@ router.delete('/:productId', checkAdmin, async (req, res) => {
         res.status(500).send({ message: error.message });
     }
 });
-
 
 
 module.exports = router; // Ensure this line is present

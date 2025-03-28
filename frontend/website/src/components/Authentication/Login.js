@@ -19,7 +19,6 @@ const Login = ({ onSwitchToSignup }) => {
 
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('isAdmin', response.data.isAdmin);
-
       navigate('/');
     } catch (err) {
       console.log('Login failed:', err);

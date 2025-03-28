@@ -10,7 +10,7 @@ const productRoutes = require('./api/routes/products');
 const orderRoutes = require('./api/routes/orders');
 const userRoutes = require('./api/routes/user');
 const home = require('./api/routes/home');
-
+const cartRoutes = require('./api/routes/cart');
 
 // Middleware to parse JSON request bodies
 //express automatically includes body-parser
@@ -22,6 +22,8 @@ app.use(cors());
 app.use('/products', productRoutes); 
 app.use('/orders', orderRoutes);
 app.use('/user',userRoutes);
+app.use('/cart',cartRoutes);
+
 app.get('/',(req,res)=>{
     res.json("hello it is working");
 });

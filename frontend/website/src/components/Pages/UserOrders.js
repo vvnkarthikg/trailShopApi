@@ -25,6 +25,7 @@ const UserOrders = () => {
                 const response = await axios.get(`${process.env.REACT_APP_API_URL}/orders`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
+                console.log(response.data.orders);
                 setOrders(response.data.orders);
             } catch (err) {
                 if (err.response?.status === 401 && err.response.data.message === "Invalid token") {

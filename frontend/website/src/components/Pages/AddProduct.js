@@ -9,6 +9,7 @@ const AddProduct = () => {
   const [price, setPrice] = useState('');
   const [quantity, setQuantity] = useState(0);
   const [category, setCategory] = useState('');
+  const [brand, setBrand] = useState('');
   const [productImage, setProductImage] = useState(no);
   const [description, setDescription] = useState(''); // New state for description
   const [message, setMessage] = useState('');
@@ -26,6 +27,7 @@ const AddProduct = () => {
     const formData = new FormData();
     formData.append('name', name);
     formData.append('price', price);
+    formData.append('brand', brand);
     if (quantity) formData.append('quantity', quantity); // Only append if quantity is provided
     if (category) formData.append('category', category); // Only append if category is provided
     if (description) formData.append('description', description); // Append description
@@ -48,6 +50,7 @@ const AddProduct = () => {
       setPrice('');
       setQuantity(0);
       setCategory('');
+      setBrand('');
       setDescription('');
       setProductImage(null);
     } catch (error) {
@@ -60,11 +63,11 @@ const AddProduct = () => {
   return (
     <div className="addproduct-container">
       <h2>Add Product</h2>
-      <div className="form-layout">
+      <div className="addproduct-form-layout">
         <div className="upload-section">
           <ImageUpload onImageChange={handleImageChange} />
         </div>
-        <form onSubmit={handleSubmit} className="details-section">
+        <form onSubmit={handleSubmit} className="addproduct-details-section">
           <div>
             <label>Name:</label>
             <input
@@ -103,6 +106,14 @@ const AddProduct = () => {
             />
           </div>
           <div>
+            <label>Brand:</label>
+            <input
+              type="text"
+              value={brand}
+              onChange={(e) => setBrand(e.target.value)}
+            />
+          </div>
+          <div>
             <label>Description:</label>
             <textarea
               value={description}
@@ -111,7 +122,7 @@ const AddProduct = () => {
               required
             />
           </div>
-          <button type="submit" disabled={loading}>
+          <button type="submit" disabled={loading} className="addproduct-submit-button">
             {loading ? 'Adding...' : 'Add Product'}
           </button>
         </form>

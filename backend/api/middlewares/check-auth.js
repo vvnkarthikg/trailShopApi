@@ -8,32 +8,27 @@
 
 const jwt = require('jsonwebtoken');
 
-module.exports = (req,res,next) =>{
+module.exports = (req, res, next) => {
+    try {
+        const authHeader = req.headers.authorization;
 
-    try{
-        const token = req.headers.authorization.split(' ')[1];
+        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+            return res.status(401).json({ message: 'No token provided or incorrect format' });
+        }
 
-        if (!token) {
-            return res.status(401).json({ message: 'No token provided' });
-          }
+        const token = authHeader.split(' ')[1];
 
-         jwt.verify(token,
-            process.env.JWT_KEY,(err,decoded)=>{
+        jwt.verify(token, process.env.JWT_KEY, (err, decoded) => {
+            if (err) {
+                return res.status(401).json({ message: 'Invalid or expired token' });
+            }
 
-                if (err) {
-                    return res.status(401).json({ message: 'Invalid token' });
-                  }
-
-                  req.userData = decoded;
-                  
-                next();
-
-            });
-            
-    }
-    catch(error){
-        return res.status(401).json({
-            message: 'Auth failed'
+            // Attach user data to request object
+            req.userData = decoded;
+            next();
         });
+
+    } catch (error) {
+        return res.status(401).json({ message: 'Auth failed' });
     }
 };

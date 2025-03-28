@@ -1,16 +1,23 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 import './Products.css';
 import no from '../images/no.jpg';
-import bannerImage from '../images/minibanner5.png';
+import bannerImage from '../images/minibanner6.png';
 import brand1 from '../images/kinderjoy.png';
 import brand2 from '../images/parle.svg';
 import brand3 from '../images/tictac.png';
+import { addToCart } from '../../store/slice/cartSlice';
 import { FaShoppingCart } from 'react-icons/fa';
 
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+
 const Products = () => {
-  const { products, error } = useSelector(state => state.products); // Get products from Redux
+  const dispatch = useDispatch();
+  const { products, error } = useSelector(state => state.products);
+  const token = localStorage.getItem("token");
 
   // Group products by category
   const categories = products.reduce((acc, product) => {
@@ -19,90 +26,154 @@ const Products = () => {
     return acc;
   }, {});
 
+    // Custom Next Arrow Component
+    const CustomNextArrow = (props) => {
+      const { className, style, onClick } = props;
+      return (
+        <div
+          className={className}
+          style={{ 
+            ...style, 
+            display: "block", 
+            background: "rgba(0,0,0,0.5)", 
+            borderRadius: "50%"
+          }}
+          onClick={onClick}
+        />
+      );
+    };
+    
+    // Custom Previous Arrow Component
+    const CustomPrevArrow = (props) => {
+      const { className, style, onClick } = props;
+      return (
+        <div
+          className={className}
+          style={{ 
+            ...style, 
+            display: "block", 
+            background: "rgba(0,0,0,0.5)", 
+            borderRadius: "50%"
+          }}
+          onClick={onClick}
+        />
+      );
+    };
+  
+
+  const settings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    pauseOnHover: true,
+    slidesToShow: 5,
+    slidesToScroll:3,
+    responsive: [
+      {
+        breakpoint: 1024, // Large screens
+        settings: {
+          slidesToShow: 5,
+          slidesToScroll: 3,
+          infinite: true,
+          dots: true
+        }
+      },
+      {
+        breakpoint: 768, // Medium screens (tablets)
+        settings: {
+          slidesToShow: 5,
+          slidesToScroll: 2,
+          initialSlide: 2
+        }
+      },
+      {
+        breakpoint: 480, // Small screens (mobile)
+        settings: {
+          slidesToShow: 5,
+          slidesToScroll: 1
+        }
+      }
+    ],
+    nextArrow: <CustomNextArrow />,
+    prevArrow: <CustomPrevArrow />,
+    accessibility: true,
+    centerMode: false
+  };
+  
+
+  const handleAddToCart = (product) => {
+    dispatch(addToCart({
+      token,
+      pId: product._id,
+      quantity: 1, // Default quantity (adjust if needed)
+      name: product.name,
+      price: product.price
+    }));
+    alert(`${product.name} added to cart!`);
+  };
+
   return (
     <>
-      <div className="banner-image">
-        <img src={bannerImage} alt="Banner" className="banner-img" />
+      <div className="prod-banner-image">
+        <img src={bannerImage} alt="Banner" className="prod-banner-img" />
       </div>
 
       {/* Brand Logos Section */}
-      <div className="brand-section">
-        <h2 className="brand-heading">Brands We Sell</h2>
-        <div className="brand-logos">
-          <img src={brand1} alt="Brand 1" className="brand-logo" />
-          <img src={brand2} alt="Brand 2" className="brand-logo" />
-          <img src={brand3} alt="Brand 3" className="brand-logo" />
+      <div className="prod-brand-section">
+        <h2 className="prod-brand-heading">Brands We Sell</h2>
+        <div className="prod-brand-logos">
+          <img src={brand1} alt="Brand 1" className="prod-brand-logo" />
+          <img src={brand2} alt="Brand 2" className="prod-brand-logo" />
+          <img src={brand3} alt="Brand 3" className="prod-brand-logo" />
         </div>
       </div>
 
-      <div className="home-container">
+      <div className="prod-home-container">
         {error && <p className="error-text">{error}</p>}
-        
+
         {products.length === 0 ? (
           <p>No products available</p>
         ) : (
           Object.keys(categories).map(category => (
-            <div key={category} className="category-section">
-              <h3 className="category-title">
-                {category} 
-              </h3>
-              
+            <div key={category} className="prod-category-section">
+              <h3 className="prod-category-title">{category}</h3> 
               <div className="prod-list">
-                {categories[category].map(product => {
-                  const discountedPrice = (product.price * 0.9).toFixed(2); // 10% discount
-                  return (
-                    <Link key={product._id} to={`/products/${product.productId}`} style={{ textDecoration: 'none' }}>
-                      <div className="prod-card">
-                        <div className="prod-image">
-                          <img
-                            src={product.productImage && product.productImage.startsWith("http")
-                             ? product.productImage 
-                              : no}
-                            alt={product.name}
-                            className="product-image"
-                          />
-
-                          {/* Add to Cart Button */}
-                          {/* <button className="add-to-cart-btn">Add to Cart</button> */}
-
-                          {/* Cart Icon */}
-                          <div className="cart-icon-container">
-                            <FaShoppingCart className="cart-icon"/>
+                <Slider {...settings}>
+                  {categories[category].map(product => {
+                    const discountedPrice = (product.price * 0.9).toFixed(2); // 10% discount
+                    return (
+                      <div key={product._id} className="prod-card">
+                        <Link to={`/products/${product._id}`} style={{ textDecoration: 'none' }}>
+                          <div className="prod-image">
+                            <img
+                              src={product.productImage && product.productImage.startsWith("http")
+                                ? product.productImage
+                                : no}
+                              alt={product.name}
+                            />
                           </div>
-
-                          {/* Add to Cart Text */}
-                          <p className="add-to-cart-text">Add to Cart</p>
-
-                          {/* Product Details */}
-                          {/* <p className="prod-details">{product.description}</p> */}
-
-                          {/* Product Rating */}
-                        </div>
+                        </Link>
                         <div className="prod-details">
                           <div className="prod-category-container">
-                          <p className='prod-category'>{product.category}</p>
-                          <div className="prod-add-to-cart">
-                            <FaShoppingCart className="cart-icon"/>
-                             <p>Add to cart</p> 
+                            <p className='prod-category'>{product.category}</p>
+                            <div className="prod-add-to-cart" onClick={(e) => handleAddToCart(product)}>
+                              <FaShoppingCart className="prod-cart-icon" />
+                              <p>Add to cart</p>
                             </div>
                           </div>
-                          
-                          <h2>{product.name}</h2>
+                          <Link to={`/products/${product._id}`} style={{ textDecoration: 'none' }}>
+                            <h2>{product.name}</h2>
+                          </Link>
                           <div className="prod-price-container">
                             <p className="prod-price">₹{discountedPrice}</p>
-                            <p className="prod-mrp-price">
-                              ₹{product.price}
-                            </p>
-                            
-                            
-
+                            <p className="prod-mrp-price">₹{product.price}</p>
                           </div>
                         </div>
                       </div>
-                    </Link>
-                  );
-                })}
-              </div>
+                    );
+                  })}
+                  </Slider>
+                </div>
             </div>
           ))
         )}

@@ -1,11 +1,8 @@
 /* AddProduct Component Styles */
 
-body {
-    background-color:#ecf7f8 ;
-}
 
 .addproduct-container {
-    max-width: 1000px;
+    max-width: 1200px;
     margin: 0 auto;
     padding: 25px;
     font-family: "Roboto", sans-serif;
@@ -23,7 +20,7 @@ body {
 
 }
 
-.form-layout {
+.addproduct-form-layout {
     display: flex;
     flex-direction: row;
     gap: 20px;
@@ -67,7 +64,7 @@ body {
 
 label.custom-file-upload {
     padding: 10px 20px;
-    background-color: #007bff;
+    background-color: #1625ab;
     color: white;
     border-radius: 5px;
     cursor: pointer;
@@ -80,22 +77,22 @@ label.custom-file-upload:hover {
     background-color: #0056b3;
 }
 
-.details-section {
+.addproduct-details-section {
     flex: 2;
     display: flex;
     flex-direction: column;
     gap: 15px;
 }
 
-.details-section label {
+.addproduct-details-section label {
     margin-bottom: 5px;
     font-weight: 600; /* Increased weight for better readability */
     color: #333;
 }
 
-.details-section input[type="text"],
-.details-section input[type="number"],
-.details-section textarea {
+.addproduct-details-section input[type="text"],
+.addproduct-details-section input[type="number"],
+.addproduct-details-section textarea {
     padding: 12px;
     font-size: 1rem;
     width: 95%;
@@ -104,22 +101,22 @@ label.custom-file-upload:hover {
     transition: border 0.3s ease-in-out;
 }
 
-.details-section input:focus,
-.details-section textarea:focus {
+.addproduct-details-section input:focus,
+.addproduct-details-section textarea:focus {
     border-color: #007bff;
     outline: none;
     box-shadow: 0px 0px 5px rgba(0, 123, 255, 0.2);
 }
 
 
-.details-section textarea {
+.addproduct-details-section textarea {
     resize: vertical;
 }
 
 /* Button Styling */
-button[type="submit"] {
+.addproduct-submit-button {
     padding: 12px;
-    background: linear-gradient(to right, #2522b5, #2620d0);
+    background-color: #2522b5;
     color: white;
     border: none;
     cursor: pointer;
@@ -130,8 +127,8 @@ button[type="submit"] {
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.08);
 }
 
-button[type="submit"]:hover {
-    background-color: #031a34;
+.addproduct-submit-button:hover {
+    background-color: #1511ea;
     box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.12);
 
 }
