@@ -23,6 +23,9 @@ const productSlice = createSlice({
         },
         deleteProduct: (state, action) => {
             const index = state.products.findIndex(p => p._id === action.payload._id);
+            if (index !== -1) {
+                state.products.splice(index, 1); 
+            }
         }
     },
 

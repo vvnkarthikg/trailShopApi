@@ -1,17 +1,13 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Link } from 'react-router-dom';
 import './Products.css';
-import no from '../images/no.jpg';
 import bannerImage from '../images/minibanner6.png';
 import brand1 from '../images/kinderjoy.png';
 import brand2 from '../images/parle.svg';
 import brand3 from '../images/tictac.png';
 import { addToCart } from '../../store/slice/cartSlice';
 import ProductSlider from './ProductSlider';
-import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 
-import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
@@ -29,63 +25,7 @@ const Products = () => {
   }, {});
   
 
-  const CustomNextArrow = ({ onClick }) => {
-    return (
-      <div className="prod-custom-arrow prod-next-arrow" onClick={onClick}>
-        <FaArrowRight />
-      </div>
-    );
-  };
-  
-  const CustomPrevArrow = ({ onClick }) => {
-    return (
-      <div className="prod-custom-arrow prod-prev-arrow" onClick={onClick}>
-        <FaArrowLeft />
-      </div>
-    );
-  };
-  
 
-  const settings = {
-    dots: true,
-    infinite: true,
-    speed: 500,
-    pauseOnHover: true,
-    slidesToShow: 5,
-    slidesToScroll:3,
-    nextArrow: <CustomNextArrow />,
-  prevArrow: <CustomPrevArrow />,
-    responsive: [
-      {
-        breakpoint: 1024, // Large screens
-        settings: {
-          slidesToShow: 5,
-          slidesToScroll: 3,
-          infinite: true,
-          dots: true
-        }
-      },
-      {
-        breakpoint: 768, // Medium screens (tablets)
-        settings: {
-          slidesToShow: 5,
-          slidesToScroll: 2,
-          initialSlide: 2
-        }
-      },
-      {
-        breakpoint: 480, // Small screens (mobile)
-        settings: {
-          slidesToShow: 5,
-          slidesToScroll: 1
-        }
-      }
-    ],
-    
-    accessibility: true,
-    centerMode: false
-  };
-  
 
   const handleAddToCart = (product) => {
     dispatch(addToCart({
