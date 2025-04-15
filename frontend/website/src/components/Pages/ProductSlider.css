@@ -1,0 +1,202 @@
+
+  
+.prod-slider-category-title{
+    margin:0;
+    font-size:14px;
+    font-weight: 500;
+}
+ 
+ /* .prod-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+    margin-top: 10px;
+    background: transparent;
+    padding: 10px;
+} */
+
+.prod-custom-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-52%);
+    z-index: 10;
+    background-color: gray; /* No background, just shadow */
+    color: white;
+    opacity: 40%;
+    padding: 30px 10px; /* Vertical padding for Y-axis rectangle look */
+    cursor: pointer;
+    font-size: 14px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.6); /* Vertical shadow */
+    border-radius: 4px; /* Slight round edges if needed */
+    transition: transform 0.3s ease;
+  }
+  
+  .prod-custom-arrow:hover {
+    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.8); /* stronger shadow on hover */
+    opacity:20%;
+    background-color: black;
+    transition: transform 0.8s ease;
+
+  }
+
+  .prod-next-arrow {
+    right: 10px;
+  }
+  
+  .prod-prev-arrow {
+    left: 10px;
+  }
+  
+.prod-slider-card {
+    border-radius: 4px;
+    background-color: white;
+    transition: transform 0.3s ease;
+    box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.1);
+    max-width: 270px;
+    margin-bottom:10px;
+} 
+
+.prod-slider-list {
+    padding:10px 0px;
+  }
+
+.prod-slider-list .slick-slide > div {
+    padding: 0 10px; /* Adjust this value for more or less gap*/ 
+    box-sizing: border-box;
+} 
+  
+.prod-slider-card:hover {
+    box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.15);
+    transition: transform 0.5s ease-in-out;
+}
+
+.prod-slider-card-image {
+    height: 65%;
+    border-bottom: 1px solid rgb(238, 230, 230);
+    background-color:whitesmoke;
+    padding:0px 10px;
+}
+
+.prod-slider-card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit:contain;
+    aspect-ratio: 3/2;
+    filter: drop-shadow(2px 5px 5px rgba(0, 0, 0, 0.3));
+}
+
+/* Product Details */
+.prod-slider-card-details {
+    padding:8px 15px;
+    display: flex;
+    flex-direction: column;
+    gap:5px;
+}
+
+.prod-slider-card-category {
+    font-size: 10px;
+    font-weight: 500;
+    color: black;
+    opacity: 50%;
+    font-family: "Inter","Open Sans","Nato Sans","Roboto";
+}
+
+.prod-slider-card-category-container p{
+    margin: 0;
+}
+
+.prod-slider-card-title-pack{
+    display: flex;
+    flex-direction: column;
+    gap:8px;
+}
+
+.prod-slider-pack-info{
+    font-size: 10px;
+    margin: 0;
+    width: fit-content;
+    padding: 0;
+    color:black;
+    opacity: 70%;
+    font-family: "Open Sans";
+
+}
+
+.prod-slider-card-details h2 {
+    color: #05032D;
+    font-size: 16px;
+    font-weight: 400;
+    margin-bottom: 0px;
+    margin-top: 6px;
+    min-height:fit-content;
+}
+
+.prod-slider-card-price-container {
+    display: flex;
+    align-items: center; /* Aligns text vertically */
+    gap: 10px; /* Adds space between price and MRP */
+    padding:5px 0;
+    
+}
+
+.prod-slider-card-price {
+    color: #038b4e;
+    font-size: 14px;
+    font-weight: 500;
+    padding:0;
+    margin: 0;
+    font-family: "Inter";
+}
+.prod-slider-card-mrp-price {
+    text-decoration: line-through;
+    text-decoration-color:rgba(0,0,0,0.5) ;
+    font-size: 14px;
+    padding:0;
+    margin: 0;
+}
+
+.prod-slider-card-add-to-cart{
+    display: flex;
+    align-items: center;
+    gap: 5px; /* Space between icon and text */
+    color: black;
+    background-color: #f5f5f5;
+    border-radius: 5px;
+    padding: 2px 8px; /* Adjusted padding for compact size */
+    cursor: pointer;
+    text-align: center;
+    transition: background-color 0.3s ease;
+    box-shadow: 0px 1px 5px rgba(0, 0, 0, 0.1);
+    border:1px solid #bbb;
+
+}
+
+.prod-slider-card-add-to-cart:hover{
+    transform: scale(1.01);
+    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.2);
+
+}
+
+.prod-slider-card-add-to-cart p {
+    margin: 6px 0px;
+    font-size: 10px;
+}
+
+.prod-cart-icon {
+    font-size: 16px; /* Adjust icon size */
+}
+
+.prod-slider-card-category-container{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0px;
+    padding-bottom: 0px;
+    width:100%;
+}
+
+.error-text {
+    color: red;
+    text-align: center;
+    font-size: 1rem;
+}
