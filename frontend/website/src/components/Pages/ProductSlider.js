@@ -23,9 +23,9 @@ const sliderSettings = {
   infinite: false,
   speed: 500,
   pauseOnHover: true,
-  slidesToShow: 5,
-    slidesToScroll: 3,
-    centerMode: false,
+  slidesToShow: 4,
+  slidesToScroll: 3,
+  centerMode: false,
   nextArrow: <CustomNextArrow />,
   prevArrow: <CustomPrevArrow />,
   responsive: [
@@ -38,9 +38,8 @@ const sliderSettings = {
 const ProductSlider = ({ title, products, onAddToCart }) => {
   const dynamicSettings = {
     ...sliderSettings,
-    slidesToShow: Math.min(products.length, 5), // adapt to number of products
-    slidesToScroll: Math.min(products.length, 3), // scroll only available items
-    infinite: products.length > 5, // loop only if enough items
+    slidesToShow: Math.min(products.length, 5), 
+    slidesToScroll: Math.min(products.length, 3), 
   };
   return (
     <div className="prod-slider-category-section">

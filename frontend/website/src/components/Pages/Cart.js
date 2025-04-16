@@ -3,6 +3,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { updateCart, removeFromCart, clearCart } from "../../store/slice/cartSlice";
 import './cart.css';
 import { MdDelete } from "react-icons/md";
+import no from '../images/no.jpg';
+
 
 
 const Cart = () => {
@@ -34,7 +36,16 @@ const Cart = () => {
                 <div className="cart-items">
                     {cartItems.map((item) => (
                         <div key={item.pId} className="cart-item">
-                            <img src={item.productImage} alt={item.name} className="cart-item-image" />
+                            <img
+                                src={
+                                    item.productImage?.startsWith('http')
+                                        ? item.productImage
+                                        : `${process.env.REACT_APP_API_URL}/${item.productImage || ''}`
+                                }
+                                alt={item.name}
+                                className="searchbar-product-image"
+                                onError={(e) => (e.target.src = no)}
+                            />
                             <div className="cart-item-details">
                                 <h3 className="cart-item-name">{item.name}</h3>
                                 <p className="cart-item-category">Category: {item.category}</p>

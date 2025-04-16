@@ -63,6 +63,7 @@
 .prod-slider-list .slick-slide > div {
     padding: 0 10px; /* Adjust this value for more or less gap*/ 
     box-sizing: border-box;
+    width: fit-content;
 } 
   
 .prod-slider-card:hover {

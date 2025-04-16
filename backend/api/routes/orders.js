@@ -46,6 +46,7 @@ router.get('/', checkAuth, async (req, res) => {
             };
         });
 
+
         res.status(200).json({
             count: orders.length,
             orders: transformedOrders

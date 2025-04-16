@@ -17,10 +17,10 @@ const Products = () => {
   const token = localStorage.getItem("token");
 
   // Group products by category
-  const categories = products.reduce((acc, product) => {
-    const category = product.category.toLowerCase(); // Normalize to lowercase
-    if (!acc[category]) acc[category] = [];
-    acc[category].push(product);
+  const brands = products.reduce((acc, product) => {
+    const brand = product.brand.toLowerCase().replace(/\s+/g, ''); // Normalize to lowercase and remove spaces
+    if (!acc[brand]) acc[brand] = [];
+    acc[brand].push(product);
     return acc;
   }, {});
   
@@ -60,13 +60,15 @@ const Products = () => {
         {products.length === 0 ? (
   <p>No products available</p>
 ) : (
-  Object.keys(categories).map(category => (
+  Object.keys(brands).map(brand => (
+    <div className='a123'>
     <ProductSlider
-      key={category}
-      title={category}
-      products={categories[category]}
+      key={brand}
+      title={brand}
+      products={brands[brand]}
       onAddToCart={handleAddToCart}
     />
+    </div>
   ))
 )}
 

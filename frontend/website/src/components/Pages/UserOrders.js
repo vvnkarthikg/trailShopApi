@@ -51,13 +51,13 @@ const UserOrders = () => {
                 {orders.length === 0 ? (
                     <p>No orders found.</p>
                 ) : (
-                    <ul className="order-list">
+                    <div className="order-list">
                         {orders.map(order => (
-                            <li key={order.id} className="order-item">
+                            <div key={order.id} className="order-item">
                                 <img 
-                                    src={order.product.productImage && order.product.productImage !== "" 
-                                        ? `${process.env.REACT_APP_API_URL}/${order.product.productImage}` 
-                                        : noImage} 
+                                    src={order.product.productImage ?.startsWith('http')?
+                                        order.product.productImage:
+                                        noImage} 
                                     alt={order.product.name} 
                                     className="order-item-image" 
                                 />
@@ -79,9 +79,9 @@ const UserOrders = () => {
                                         <span className="order-item-number">Order Number: {order.orderNumber}</span>
                                     </div>
                                 </div>
-                            </li>
+                            </div>
                         ))}
-                    </ul>
+                    </div>
                 )}
             </div>
         </div>

@@ -17,9 +17,12 @@
     const { products } = useSelector(state => state.products);
     const product = products?.find(p => String(p._id) === String(id));
 
-    const sameBrandProducts = product
-        ? products.filter((p) => p.brand === product.brand && p._id !== product._id)
-        : [];
+    const sameBrandProducts = product? products.filter((p) =>
+        p.brand?.toLowerCase().replace(/\s+/g, '') ===
+          product.brand?.toLowerCase().replace(/\s+/g, '') &&
+        p._id !== product._id
+    )
+  : [];
 
     console.log(sameBrandProducts);
     console.log("id from params" + id);
