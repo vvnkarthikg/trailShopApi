@@ -55,7 +55,7 @@ const UserOrders = () => {
                         {orders.map(order => (
                             <div key={order.id} className="order-item">
                                 <img 
-                                    src={order.product.productImage ?.startsWith('http')?
+                                    src={order.product.productImage?.startsWith('http')?
                                         order.product.productImage:
                                         noImage} 
                                     alt={order.product.name} 
